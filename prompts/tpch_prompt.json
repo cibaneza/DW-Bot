@@ -1,0 +1,57 @@
+{
+  "_type": "prompt",
+  "input_variables": ["input"],
+  "template": 
+  {
+    "prod_int.MasterOrderInvoice": {
+      "columns": [
+        {
+          "name": "country",
+          "type": "STRING",
+          "description": "Code country as MX = Mexico and CL = Chile"
+        },
+        {
+          "name": "date",
+          "type": "DATE",
+          "description": "Issued date of the order in format yyyy-mm-dd"
+        },
+        {
+          "name": "dateTimestamp",
+          "type": "TIMESTAMP",
+          "description": "Issued date of the order in timestamp format"
+        },
+        {
+          "name": "month",
+          "type": "STRING",
+          "description": "First day of the issued month of the product in format yyyy-mm-01"
+        },
+        {
+          "name": "disbursementDate",
+          "type": "DATE",
+          "description": "Date in which the orderInvoice was disbursed in format yyyy-mm-dd"
+        },
+        {
+          "name": "product",
+          "type": "STRING",
+          "description": "Code for the product as PP = Early payment, FD = Direct financing, PF = Financed payments and PY = Non Financed payments"
+        },
+        {
+          "name": "orderId",
+          "type": "STRING",
+          "description": "Id of the order"
+        },
+        {
+          "name": "orderStatus",
+          "type": "STRING",
+          "description": "Order status name as it appears in BackOffice"
+        },
+        {
+          "name": "orderInvoiceId",
+          "type": "STRING",
+          "description": "Id of the order invoice"
+        }
+
+      ]
+    }
+  }
+}

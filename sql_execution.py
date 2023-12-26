@@ -1,20 +1,53 @@
 import snowflake.connector
+from google.cloud import bigquery
 import pandas as pd
 from app_secrets import *
+
+client_bq = bigquery.Client()
+project_id = "xepelin-ds-prod"
+
+
+def run_query(query):
+    query_job = client_bq.query(query)
+    rows_raw = query_job.result()
+    # Convert to list of dicts. Required for st.cache_data to hash the return value.
+    rows = [dict(row) for row in rows_raw]
+    return rows
+
+
+def execute_bq_query(sql):
+    try:
+        # Execute the query
+        query_job = client_bq.query(sql)
+        rows_raw = query_job.result()
+
+        # Convert to list of dicts
+        print(sql)
+        print(query_job)
+        rows = [dict(row) for row in rows_raw]
+
+        # Create a DataFrame
+        data_frame = pd.DataFrame(rows)
+        return data_frame
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame in case of an exception
+
 
 def execute_sf_query(sql):
     # Snowflake connection parameters
     connection_params = {
-        'user': SF_USER,
-        'password': SF_PASSWORD,
-        'account': SF_ACCOUNT,
-        'warehouse': SF_WAREHOUSE,
-        'database': SF_DATABASE,
-        'schema': SF_SCHEMA,
-        'role':SF_ROLE
+        "user": SF_USER,
+        "password": SF_PASSWORD,
+        "account": SF_ACCOUNT,
+        "warehouse": SF_WAREHOUSE,
+        "database": SF_DATABASE,
+        "schema": SF_SCHEMA,
+        "role": SF_ROLE,
     }
 
-    query=sql
+    query = sql
 
     try:
         # Establish a connection to Snowflake
@@ -28,7 +61,7 @@ def execute_sf_query(sql):
             cur.execute(query)
         except snowflake.connector.errors.ProgrammingError as pe:
             print("Query Compilation Error:", pe)
-            return("Query compilation error")
+            return "Query compilation error"
 
         # Fetch all results
         query_results = cur.fetchall()
@@ -40,7 +73,7 @@ def execute_sf_query(sql):
         data_frame = pd.DataFrame(query_results, columns=column_names)
 
         # Print the DataFrame
-        #print(data_frame)
+        # print(data_frame)
         return data_frame
 
     except snowflake.connector.errors.DatabaseError as de:
@@ -64,10 +97,7 @@ def execute_sf_query(sql):
 
 if __name__ == "__main__":
     # Snowflake query
-    query = '''
-            select n.n_name , count(*) as order_count from analytics.raw.orders o 
-            inner join analytics.raw.customer c on o.o_custkey = c.c_custkey
-            inner join analytics.raw.nation n on c.c_nationkey = n.n_nationkey
-            group by n.n_name order by order_count desc limit 3
-    '''
-    execute_sf_query(query)
+    query = """
+            SELECT * FROM `xepelin-ds-prod.prod_int.MasterOrderInvoice` 
+    """
+    execute_bq_query(query)

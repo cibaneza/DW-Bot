@@ -1,0 +1,1489 @@
+  - name: int_MasterInvoices_cl
+    description: "Invoices retrieved from the SII (Servicios Internos de Impuestos) of Chile with their attached information about the credit notes"         
+    meta:
+        owner: "@SantiagoJaramillo"
+    tests:
+        - dbt_utils.unique_combination_of_columns:
+            combination_of_columns:
+                - identifier
+                - Itype
+    columns:
+      - name: identifier
+        description: "Unique identifier of the invoice - PK"
+        tests:
+          - not_null
+      - name: folio
+        description: "Folio of the invoice"
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: businessName
+        description: "Legal name of the business"
+      - name: businessIdentifier
+        description: "National id of the business (RUT)"
+      - name: stakeholderIdentifier
+        description: "Id of the stakeholder"
+      - name: stakeholderName
+        description: "Name of the stakeholder"
+      - name: Itype
+        description: "Type of invoice, values: payer | supplier"
+      - name: TotalAmount
+        description: "Total amount of the invoice in the local currency"
+      - name: flagInvoicesCancelled
+        description: "Boolean to identify a cancelled invoice, values: 1=cancelled | 0=active"
+      - name: score
+        description: "Score of the invoice"
+      - name: weightedScore
+        description: "Score multiplied by the invoice amount"
+      - name: amountCancelled
+        description: "Amount of a cancelled invoice in the local currency"
+      - name: amountCN
+        description: "Total amount of all credit notes for a particular invoice in the local currency"
+      - name: numInvoicesCN
+        description: "Number of credit notes for a particular invoice"
+      - name: issuedDate
+        description: "Date when the invoice was issued in format %Y-%m-%d"
+      - name: secret
+        description: "Internal unique code of the business"
+  - name: int_MasterCessions_cl
+    description: "Assignment of invoices, where each row represents a time an invoice was assigned to a buyer"
+    meta:
+        owner: "@SantiagoJaramillo"
+    columns:
+      - name: sellerBusinessId
+        description: "Internal consecutive code of the seller in the invoice, when -99 is because the seller is not rolled"
+      - name: secret
+        description: "Internal unique code of the business"
+      - name: invoiceIdentifier
+        description: "Unique identifier of the invoice"
+      - name: seller
+        description: "National id of the seller of the invoice"
+      - name: debtor
+        description: "National id of the debtor of the invoice"
+      - name: documentType
+        description: "Code for the type of the invoice"
+      - name: documentName
+        description: "Name type of the invoce (e.g. Factura Electronica)"
+      - name: folio
+        description: "Folio of the invoice"
+      - name: issuedDate
+        description: "date and time when the invoice was issued"
+      - name: amount
+        description: "Total amount of the invoice in the local currency"
+      - name: assignor
+        description: "National id of the assignor of the cession"
+      - name: assignorName
+        description: "Legal name of the assignor"
+      - name: assignee
+        description: "National id of the assignee of the cession"
+      - name: assigneeName
+        description: "Legal name of the assignee"
+      - name: cessionDate
+        description: "Date and time when ocurred the cession"
+      - name: cessionAmount
+        description: "Total amount of the cession in the local currency"
+      - name: expirationDate
+        description: "Date and time when the cession expires"
+      - name: timesAssigned
+        description: "Counter of times the invoice has been assigned"
+  - name: int_MasterDicom_cl
+    description: "Records of queries executed to the dicom services to retrieve information of a business"
+    meta:
+        owner: "@SantiagoJaramillo"
+    columns:
+      - name: id
+        description: "PK for the dicom query records"
+      - name: rut
+        description: "National id of the business"
+      - name: totalUnpaids
+        description: "Number of unpaids obligations"
+      - name: dicom
+        description: "Total amount of the unpaids obligations "
+      - name: numBankrupts
+        description: "Number of bankrupts reported"
+      - name: equity
+        description: "Number of equities reported"
+      - name: createdAt
+        description: "Date and time when the dicom query was executed"
+      - name: updatedAt
+        description: "Last date and time when this query was updated"
+      - name: lastDicomByMonthFlag
+        description: "Counter of times that we have queried the dicom for the same business in a month, being 1 the last one time"
+  - name: int_MasterInvoices_mx
+    description: "Invoices retrived from the SAT of Mexico with thier attached information about the credit notes"
+    meta:
+        owner: "@SantiagoJaramillo"
+    columns:
+      - name: identifier
+        description: "Unique code for the invoice"
+        tests:
+          - not_null
+      - name: folio
+        description: "Folio of the invoice"
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: businessName
+        description: "Legal name of the business"
+      - name: businessIdentifier
+        description: "National id of the business (RFC)"
+      - name: stakeholderIdentifier
+        description: "Id of the stakeholder"
+      - name: stakeholderName
+        description: "Name of the stakeholder"
+      - name: ItypeStakeholder
+        description: "Type of invoice from stakeholder, values: payer | supplier"
+      - name: totalAmount
+        description: "Total amount of the invoice in the local currency"
+      - name: flagInvoicesCancelled
+        description: "Boolean to identify a cancelled invoice, values: 1=cancelled | 0=active"
+      - name: score
+        description: "Score of the invoice"
+      - name: weightedScore
+        description: "Score multiplied by the invoice amount"
+      - name: amountCancelled
+        description: "Amount of a cancelled invoice in the local currency"
+      - name: amountCN
+        description: "Total amount of all credit notes for a particular invoice in the local currency"
+      - name: numInvoicesCN
+        description: "Number of credit notes for a particular invoice"
+      - name: issuedDate
+        description: "Date when the invoice was issued in format %Y-%m-%d"
+      - name: secret
+        description: "Internal unique code of the business"
+      - name: useCFDI
+        description: "Indicate the caracter of the accounting transaction"
+      - name: dueAmount
+        description: "Indicate the due amount of the invoice"
+      - name: lastPaymentDate
+        description: "Indicate the date of the last payment made for the invoice"
+      - name: currency
+        description: "Indicate the currency in which the nivoice was issued"
+      - name: exchange
+        description: "Indicate the exchange rate in which the invoice was issued"
+      - name: paymentMethod
+        description: "Indicate the payment method for the invoice"
+  - name: int_MasterGuarantees_mx
+    description: "Invoices that are guarantee for factoring transactions. This is a integration of RugSecureTransactions and RugSecuredTransactionInvoices"
+    meta:
+        owner: "@SatiagoJaramillo"
+    columns:
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: securedTransactionId
+        description: "Id of the secured transaction"
+      - name: registrationDate
+        description: "Registration date of the guarantee"
+      - name: lastEntryDate
+        description: "Last entry date"
+      - name: entryType
+        description: "Entry type"
+      - name: entryDate
+        description: "Entry date of the guarantee"
+      - name: creditorName
+        description: "Guarantor "
+      - name: validity
+        description: "Term in months"
+      - name: maximumAmountGuaranteed
+        description: "Maximum amount guaranteed"
+      - name: securedMovables
+        description: "Folios of the invoices that are guarateed"
+      - name: securedMovablesDescription
+        description: "Description of the folio of the invoice that is guarateed"
+      - name: obigationContract
+        description: "Contract description"
+      - name: celebrationDate
+        description: "Issued date"
+      - name: completionDate
+        description: "Due date"
+      - name: rugSecuredTransactionId
+        description: "Id of the transaction"
+      - name: invoiceIdentifier
+        description: "The uuid of the invoice"
+  - name: int_MasterPortfolio
+    description: "Detailed information for every issued product of our portafolio"
+    meta:
+      owner: "@AlmendraTamayo"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - orderInvoiceId
+            - country
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: date
+        description: "date issued of the product in format yyyy-mm-dd"
+      - name: dateTimestamp
+        description: "date issued of the product in timestamp format yyyy-mm-dd hh:mm:ss UTC"
+      - name: month
+        description: "first day of the issued month of the product in format yyyy-mm-01"
+      - name: disbursementDate
+        description: "Date in wich the orderInvoice was disbursed in format yyyy-mm-dd"
+      - name: product
+        description: "Code for the product as PP = Pronto pago, FD = Financiamiento directo , CR = Créditos , PF = Payments con financiamiento and PY = Payments con caja propia"
+      - name: fundName
+        description: "Name of the fund"
+      - name: fundId
+        description: "Id of the fund"
+      - name: orderId
+        description: "Id of the order"
+      - name: orderStatus
+        description: "Order status name as it appers in BackOffice"
+      - name: orderInvoiceId
+        description: "Id of the order invoice"
+      - name: invoiceStatus
+        description: "Invoice status name as it appers in BackOffice"
+      - name: invoiceFol
+        description: "Folio of the invoice"
+      - name: invoiceScore
+        description: "Score of the invoice"
+      - name: refinanced
+        description: "It is refinanced? 1 = yes and 0 = not"
+      - name: agreement
+        description: "Name of the agreement"
+      - name: clientBusinessId
+        description: "Id of the business"
+      - name: clientName
+        description: "Legal name of the business"
+      - name: clientIdentifier
+        description: "National id of the business"
+      - name: assignedChannelClient
+        description: "Chosen source for the client, otherwise = Indeterminado"
+      - name: emisor
+        description: "issuer of the invoice"
+      - name: emisorIdentifier
+        description: "National id of the issuer"
+      - name: userSegmentVolumeEmisor
+        description: "Volume segment of the issuer defined in the squad_saas_acquisition"
+      - name: lifecycleStageEmisor
+        description: "Lifecycle segment of the issuer defined in the squad_saas_acquisition"
+      - name: lifecycleActivityEmisor
+        description: "Lifecycle activity of the issuer defined in the squad_saas_acquisition"
+      - name: payer
+        description: "Legal name of the payer"
+      - name: payerIdentifier
+        description: "National id of the payer"
+      - name: responsiblePayer
+        description: "Legal name of the responsible for paying to Xepelin"
+      - name: responsiblePayerIdentifier
+        description: "National id of the responsible for paying to Xepelin"
+      - name: userSegmentVolumePayer
+        description: "Volume segment of the payer defined in the squad_saas_acquisition"
+      - name: userSegmentVolumeResponsiblePayer
+        description: "Volume segment of the responsible payer defined in the squad_saas_acquisition"
+      - name: lifecycleStagePayer
+        description: "Lifecycle segment of the payer defined in the squad_saas_acquisition"
+      - name: lifecycleActivityPayer
+        description: "Lifecycle activity of the payer defined in the squad_saas_acquisition"
+      - name: invoiceGrossAmount
+        description: "Total amount of the invoice in the local currency"
+      - name: transferedCurrency
+        description: "Currency in which the amount was transfered"
+      - name: invoiceDiscount
+        description: "Total amount of discounts of the invoice"
+      - name: invoiceRevenue
+        description: "Gross Revenue amount for invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * (invoiceTerm / 30) + (invoiceOperationCost prorated by number of invoices financed in the order without IVA tax)"
+      - name: invoiceRevenueTax
+        description: "Gross Revenue amount for invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * (invoiceTerm / 30) + (invoiceOperationCost prorated by number of invoices financed in the order)"
+      - name: invoiceOperationCost
+        description: "Operation cost prorated on invoices that have not been rejected"
+      - name: invoiceOperationCostReal
+        description: "Operation cost prorated on invoices that have not been rejected, free tax (IVA)"
+      - name: pctAdvance
+        description: "Advance percentage"
+      - name: invoiceIssuedDate
+        description: "Date when the invoice was issued in format yyyy-mm-dd"
+      - name: expirationDate
+        description: "Invoice due date in format yyyy-mm-dd"
+      - name: paymentDate
+        description: "Invoice payment date in format yyyy-mm-dd"
+      - name: invoiceTerm
+        description: "Invoice term calculated as expirationDate - date"
+      - name: invoiceRate
+        description: "Invoice origination fee. If it not exists is the order origination fee"
+      - name: invoiceRateFund
+        description: "Rate fund"
+      - name: invoiceCurrentTotalAmount
+        description: "Current amount of the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. only for invoices in status = [ACTIVE, HARD_DELINQUENCY, SOFT_DELINQUENCY, DELINQUENT, RENEGOTIATION, HARD_COLLECTION] or  for CL, order status in 'RENEGOTIATION' and  invoice status not  PAID, COMPLETE and payment date is not null, otherwise is 0"
+      - name: invoiceAmountFinanced
+        description: "Amount of the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance. only for invoices in status after ACTIVE otherwise is 0"
+      - name: portfolioStatus
+        description: "Current state of the invoice"
+      - name: invoiceFundRevenue
+        description: "Fund cost = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * invoiceRateFund * invoiceTerm / 30"
+      - name: clientSector
+        description: "Category of the customer"
+      - name: responsiblePayerSector
+        description: "Category of the payer responsible"
+      - name: revenueOverdue
+        description: "Income for late payment"
+      - name: invoiceCreditNoteAmount
+        description: "Amount of credit notes"
+      - name: amountPartialPays
+        description: "Amount of total partial pays"
+      - name: interest
+        description: "Income for interest rate = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * invoiceTerm / 30"
+      - name: rateAllIn
+        description: "origination rate including the operation cost without IVA tax"
+      - name: rateAllInTax
+        description: "origination rate including the operation cost"
+      - name: startDateFund
+        description: "Date of invoice transfer to the fund"
+      - name: isCancelled
+        description: "Is the invoice cancelled or annulled ? 1 = yes | 0 = not"
+      - name: mora
+        description: "Late payment"
+      - name: suggestedRate
+        description: "Suggested rate"
+      - name: uuid
+        description: "Unique identifier for the invoice. in MX it includes the folio"
+      - name: refinancedDate
+        description: "Date when the invoice was refinanced in format yyyy-mm-dd"
+      - name: isInvoiceFinanced
+        description: "the invoice is financed? 1 = yes and 0 = not"
+      - name: subSectorId
+        description: "Code of the subsector of the payer"
+      - name: responsiblePayerSubsector
+        description: "Name of the subsector of the payer"
+      - name: orderHasCession
+        description: "The order has cession? 1 = yes and 0 = not"
+      - name: orderPayerContribution
+        description: "It has payer contribution? 1 = yes | 0 = not"
+      - name: orderHasRevolving
+        description: "it has revolving? 1 = yes | 0 = not"
+      - name: xepelinIndex
+        description: "New index for the sector defined by xepelin"
+      - name: indexName
+        description: "New name of the sector"
+      - name: perspective
+        description: "Economic perspective for each sector"
+      - name: defaultProbability
+        description: "Probability of default for each order invoice"
+      - name: moratoryInterest
+        description: "accountable interest charged by delinquency"
+      - name: analysisDate
+        description: "Date when the query was executed in timestamp format yyyy-mm-dd hh:mm:ss UTC"
+      - name: paymentConfirmedDate
+        description: "Payment confirmation date"
+      - name: linkBO
+        description: "URL of the order in BackOffice"
+      - name: clientRegisterDate
+        description: "Date of the client registration"
+      - name: clientEnrolledDate
+        description: "Date when the client gets enrrolled"
+      - name: firstOp
+        description: "First Order 1 = YES | 0 = NO"
+      - name: lastop
+        description: "Last Order 1 = YES | 0 = NO"
+      - name: cohort
+        description: "Year month of the first operation of the client"
+      - name: rankingPayer
+        description: "Ranking of the responsible payer"
+      - name: estimatedFundRate
+        description: "When an invoice was already assigned to a fund it will be the assigned invoiceRateFund, if it has no fund assigned then is the median of the last 60 day assigned invoices"
+      - name: assistedType
+        description: "Classification of the order according to the management of customer, definition of customer success area. SelfManaged, operations created by the client, according to the mark createdBy='USER_CLIENT' and that do not have any additional changes to the aditional variables. Assisted, orders created by the client, according to the mark createdBy='USER_CLIENT' but have changes in the aditional variables, Personified, orders that in the createdBy tag contain 'PERSONIFIED_CLIENT' or 'BACKOFFICE'."
+      - name: hasPaymentPlan
+        description: "The invoice has payment plan? 1 = yes and 0 = not"
+      - name: hasExtension
+        description: "The invoice has extension? 1 = yes and 0 = not"
+      - name: statusPaymentPlan
+        description: "status of payment plan. Cumplimiento/ No cumplimiento/ En Proceso"
+      - name: statusExtension
+        description: "status of extension. Cumplimiento/ No cumplimiento"
+      - name: datePromiseExtension
+        description: "Last expiration date for the invoice with extension"
+      - name: orderInvoiceIdRevolving
+        description: "The orderInvoiceId of the invoice that has the revolving"
+  - name: int_PortfolioStatusMonthly
+    description: "Detailed information for every issued product of our portafolio, by every closed month. The last 6 fields are calculated for every month. The others fields are the same information tha masterPortfolio."
+    meta:
+      owner: "@AlmendraTamayo"
+    columns:
+      - name: country
+        description: "Same info that MasterPortfolio. Code country as MX = Mexico and CL = Chile"
+      - name: date
+        description: "Same info that MasterPortfolio. date issued of the product in format yyyy-mm-dd"
+      - name: month
+        description: "Same info that MasterPortfolio. first day of the issued month of the product in format yyyy-mm-01"
+      - name: product
+        description: "Same info that MasterPortfolio. Code for the product as PP = Pronto pago, FD = Financiamiento directo , CR = Créditos , PF = Payments con financiamiento and PY = Payments con caja propia"
+      - name: fundName
+        description: "Same info that MasterPortfolio. Name of the fund"
+      - name: fundId
+        description: "Same info that MasterPortfolio. Id of the fund"
+      - name: orderId
+        description: "Same info that MasterPortfolio. Id of the order"
+      - name: orderStatus
+        description: "Same info that MasterPortfolio. Order status name as it appers in BackOffice"
+      - name: orderInvoiceId
+        description: "Same info that MasterPortfolio. Id of the order invoice"
+      - name: invoiceStatus
+        description: "Same info that MasterPortfolio. Invoice status name as it appers in BackOffice"
+      - name: invoiceFol
+        description: "Same info that MasterPortfolio. Folio of the invoice"
+      - name: invoiceScore
+        description: "Same info that MasterPortfolio. Score of the invoice"
+      - name: refinanced
+        description: "Same info that MasterPortfolio. It is refinanced? 1 = yes and 0 = not"
+      - name: agreement
+        description: "Same info that MasterPortfolio. Name of the agreement"
+      - name: clientBusinessId
+        description: "Same info that MasterPortfolio. Id of the business"
+      - name: clientName
+        description: "Same info that MasterPortfolio. Legal name of the business"
+      - name: clientIdentifier
+        description: "Same info that MasterPortfolio. National id of the business"
+      - name: assignedChannelClient
+        description: "Same info that MasterPortfolio. Chosen source for the client, otherwise = Sin información"
+      - name: emisor
+        description: "Same info that MasterPortfolio. issuer of the invoice"
+      - name: emisorIdentifier
+        description: "Same info that MasterPortfolio. National id of the issuer"
+      - name: userSegmentVolumeEmisor
+        description: "Same info that MasterPortfolio. Volume segment of the issuer defined in the squad_saas_acquisition"
+      - name: lifecycleStageEmisor
+        description: "Same info that MasterPortfolio. Lifecycle segment of the issuer defined in the squad_saas_acquisition"
+      - name: lifecycleActivityEmisor
+        description: "Same info that MasterPortfolio. Lifecycle activity of the issuer defined in the squad_saas_acquisition"
+      - name: payer
+        description: "Same info that MasterPortfolio. Legal name of the payer"
+      - name: payerIdentifier
+        description: "Same info that MasterPortfolio. National id of the issuer"
+      - name: responsiblePayer
+        description: "Same info that MasterPortfolio. Legal name of the responsible for paying to Xepelin"
+      - name: responsiblePayerIdentifier
+        description: "Same info that MasterPortfolio. National id of the responsible for paying to Xepelin"
+      - name: userSegmentVolumePayer
+        description: "Same info that MasterPortfolio. Volume segment of the payer defined in the squad_saas_acquisition"
+      - name: userSegmentVolumeResponsiblePayer
+        description: "Same info that MasterPortfolio.Volume segment of the responsible payer defined in the squad_saas_acquisition"
+      - name: lifecycleStagePayer
+        description: "Same info that MasterPortfolio. Lifecycle segment of the payer defined in the squad_saas_acquisition"
+      - name: lifecycleActivityPayer
+        description: "Same info that MasterPortfolio. Lifecycle activity of the payer defined in the squad_saas_acquisition"
+      - name: invoiceGrossAmount
+        description: "Same info that MasterPortfolio. Total amount of the invoice in the local currency"
+      - name: transferedCurrency
+        description: "Same info that MasterPortfolio. Currency in which the amount was transfered"
+      - name: invoiceDiscount
+        description: "Same info that MasterPortfolio. Total amount of discounts of the invoice"
+      - name: invoiceRevenue
+        description: "Same info that MasterPortfolio. Gross Revenue amount for invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * (invoiceTerm / 30) + (invoiceOperationCost prorated by number of invoices financed in the order)"
+      - name: invoiceOperationCost
+        description: "Same info that MasterPortfolio. Operation cost prorated on invoinces that have not been rejected"
+      - name: pctAdvance
+        description: "Same info that MasterPortfolio. Advance percentage"
+      - name: paymentConfirmedDate
+        description: "Same info that MasterPortfolio. Payment confirmation date in format yyyy-mm-dd "
+      - name: invoiceIssuedDate
+        description: "Same info that MasterPortfolio. Date when the invoice was issued in format yyyy-mm-dd"
+      - name: expirationDate
+        description: "Same info that MasterPortfolio. Invoice due date in format yyyy-mm-dd"
+      - name: paymentDate
+        description: "Same info that MasterPortfolio. Invoice payment date in format yyyy-mm-dd"
+      - name: invoiceTerm
+        description: "Same info that MasterPortfolio. Invoice term calculated as expirationDate - date"
+      - name: invoiceRate
+        description: "Same info that MasterPortfolio. Invoice origination fee. If it not exists is the order origination fee"
+      - name: invoiceRateFund
+        description: "Same info that MasterPortfolio. Rate fund"
+      - name: linkBO
+        description: "Same info that MasterPortfolio. link to backoffice of the order"
+      - name: invoiceCurrentTotalAmount
+        description: "Same info that MasterPortfolio. Current amount of the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. only for invoices in status = [ACTIVE, HARD_DELINQUENCY, SOFT_DELINQUENCY, DELINQUENT, RENEGOTIATION, HARD_COLLECTION] otherwise is 0"
+      - name: invoiceAmountFinanced
+        description: "Same info that MasterPortfolio. Amount of the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance. only for invoices in status after ACTIVE otherwise is 0"
+      - name: portfolioStatus
+        description: "Same info that MasterPortfolio. Current state of the invoice"
+      - name: invoiceFundRevenue
+        description: "Same info that MasterPortfolio. Fund cost = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * invoiceRateFund * invoiceTerm / 30"
+      - name: clientRegisterDate
+        description: "Same info that MasterPortfolio. Customer registration date in format yyyy-mm-dd"
+      - name: clientEnrolledDate
+        description: "Same info that MasterPortfolio. Customer enrolled date in format yyyy-mm-dd"
+      - name: rankingPayer
+        description: "Same info that MasterPortfolio. Payer ranking"
+      - name: clientSector
+        description: "Same info that MasterPortfolio. Category of the customer"
+      - name: responsiblePayerSector
+        description: "Same info that MasterPortfolio. Category of the payer responsible"
+      - name: revenueOverdue
+        description: "Same info that MasterPortfolio. Income for late payment"
+      - name: invoiceCreditNoteAmount
+        description: "Same info that MasterPortfolio. Amount of credit notes"
+      - name: amountPartialPays
+        description: "Same info that MasterPortfolio. Amount of total partial pays"
+      - name: interest
+        description: "Same info that MasterPortfolio. Income for interest rate = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * invoiceTerm / 30"
+      - name: rateAllIn
+        description: "Same info that MasterPortfolio. origination rate including the operation cost"
+      - name: startDate
+        description: "Same info that MasterPortfolio. Date when the interest fee begins"
+      - name: startDateFund
+        description: "Same info that MasterPortfolio. Date of invoice transfer to the fund"
+      - name: isCancelled
+        description: "Same info that MasterPortfolio. Is the invoice cancelled or annulled ? 1 = yes | 0 = not"
+      - name: mora
+        description: "Same info that MasterPortfolio. Late payment"
+      - name: suggestedRate
+        description: "Same info that MasterPortfolio. Suggested rate"
+      - name: uuid
+        description: "Same info that MasterPortfolio. Unique identifier for the invoice. in MX it includes the folio"
+      - name: refinancedDate
+        description: "Same info that MasterPortfolio. Date when the invoice was refinanced in format yyyy-mm-dd"
+      - name: isInvoiceFinanced
+        description: "Same info that MasterPortfolio. the invoice is financed? 1 = yes and 0 = not"
+      - name: subSectorId
+        description: "Same info that MasterPortfolio. Code of the subsector of the payer"
+      - name: responsiblePayerSubsector
+        description: "Same info that MasterPortfolio. Name of the subsector of the payer"
+      - name: orderHasCession
+        description: "Same info that MasterPortfolio. The order has cession? 1 = yes and 0 = not"
+      - name: orderPayerContribution
+        description: "Same info that MasterPortfolio. It has payer contribution? 1 = yes | 0 = not"
+      - name: orderHasRevolving
+        description: "Same info that MasterPortfolio. it has revolving? 1 = yes | 0 = not"
+      - name: xepelinIndex
+        description: "Same info that MasterPortfolio. New index for the sector defined by xepelin"
+      - name: indexName
+        description: "Same info that MasterPortfolio. New name of the sector"
+      - name: perspective
+        description: "Same info that MasterPortfolio. Economic perspective for each sector"
+      - name: firstOp
+        description: "Same info that MasterPortfolio. it was the first operation of the business? 1 = yes and 0 = not"
+      - name: lastOp
+        description: "Same info that MasterPortfolio. it was the last operation of the business? 1 = yes and 0 = not"
+      - name: cohort
+        description: "Same info that MasterPortfolio. cohort of the business describe as year and month in format yyyy-mm"
+      - name: analysisDate
+        description: "Date when the query was executed in format yyyy-mm-dd"
+      - name: monthAnalyzed
+        description: "End of the month Analyzed in format yyyy-mm-dd"
+      - name: amountGrossActive
+        description: "invoiceGrossAmount if at the end of the month there was an active amount (unpaid) "
+      - name: difDaysPaymentExpiration
+        description: "Difference between paymentDate and expirationDate. If current date or monthAnalyzed < expirationDate then 0. If paymentDate is null or paymentDate > current date or monthAnalyzed then difference between currentDate or monthAnalyzedDate and expirationDate"
+      - name: overdueDays
+        description: "Difference between paymentDate and expirationDate. If date (requestDate) > monthAnalyzed then -999. If paymentDate is null or paymentDate > current date or monthAnalyzed then difference between currentDate or monthAnalyzedDate and expirationDate "
+      - name: amountActive
+        description: "Current amount active at the end of the monthAnalyzed. pctAdvance *(invoiceGrossAmount - invoiceCreditNoteAmount - invoiceDiscount)- pagoParcial"
+      - name: status
+        description: "status of invoice at the end of the monthAnalyzed"
+      - name: fundAtTheTime
+        description: "Fund assigned to the invoice at the end of the monthAnalyzed"
+      - name: fundRateAtTheTime
+        description: "Fund rate applied to the  invoice at the end of the monthAnalyzed"
+  - name: int_PortfolioStatusWeekly
+    description: "Detailed information for every issued product of our portafolio, by every closed week. The last 6 fields are calculated for every month. The others fields are the same information tha masterPortfolio."
+    meta:
+      owner: "@AlmendraTamayo"
+    columns:
+      - name: country
+        description: "Same info that MasterPortfolio. Code country as MX = Mexico and CL = Chile"
+      - name: date
+        description: "Same info that MasterPortfolio. date issued of the product in format yyyy-mm-dd"
+      - name: month
+        description: "Same info that MasterPortfolio. first day of the issued month of the product in format yyyy-mm-01"
+      - name: product
+        description: "Same info that MasterPortfolio. Code for the product as PP = Pronto pago, FD = Financiamiento directo , CR = Créditos , PF = Payments con financiamiento and PY = Payments con caja propia"
+      - name: fundName
+        description: "Same info that MasterPortfolio. Name of the fund"
+      - name: fundId
+        description: "Same info that MasterPortfolio. Id of the fund"
+      - name: orderId
+        description: "Same info that MasterPortfolio. Id of the order"
+      - name: orderStatus
+        description: "Same info that MasterPortfolio. Order status name as it appers in BackOffice"
+      - name: orderInvoiceId
+        description: "Same info that MasterPortfolio. Id of the order invoice"
+      - name: invoiceStatus
+        description: "Same info that MasterPortfolio. Invoice status name as it appers in BackOffice"
+      - name: invoiceFol
+        description: "Same info that MasterPortfolio. Folio of the invoice"
+      - name: invoiceScore
+        description: "Same info that MasterPortfolio. Score of the invoice"
+      - name: refinanced
+        description: "Same info that MasterPortfolio. It is refinanced? 1 = yes and 0 = not"
+      - name: agreement
+        description: "Same info that MasterPortfolio. Name of the agreement"
+      - name: clientBusinessId
+        description: "Same info that MasterPortfolio. Id of the business"
+      - name: clientName
+        description: "Same info that MasterPortfolio. Legal name of the business"
+      - name: clientIdentifier
+        description: "Same info that MasterPortfolio. National id of the business"
+      - name: assignedChannelClient
+        description: "Same info that MasterPortfolio. Chosen source for the client, otherwise = Sin información"
+      - name: emisor
+        description: "Same info that MasterPortfolio. issuer of the invoice"
+      - name: emisorIdentifier
+        description: "Same info that MasterPortfolio. National id of the issuer"
+      - name: userSegmentVolumeEmisor
+        description: "Same info that MasterPortfolio. Volume segment of the issuer defined in the squad_saas_acquisition"
+      - name: lifecycleStageEmisor
+        description: "Same info that MasterPortfolio. Lifecycle segment of the issuer defined in the squad_saas_acquisition"
+      - name: lifecycleActivityEmisor
+        description: "Same info that MasterPortfolio. Lifecycle activity of the issuer defined in the squad_saas_acquisition"
+      - name: payer
+        description: "Same info that MasterPortfolio. Legal name of the payer"
+      - name: payerIdentifier
+        description: "Same info that MasterPortfolio. National id of the issuer"
+      - name: responsiblePayer
+        description: "Same info that MasterPortfolio. Legal name of the responsible for paying to Xepelin"
+      - name: responsiblePayerIdentifier
+        description: "Same info that MasterPortfolio. National id of the responsible for paying to Xepelin"
+      - name: userSegmentVolumePayer
+        description: "Same info that MasterPortfolio. Volume segment of the payer defined in the squad_saas_acquisition"
+      - name: userSegmentVolumeResponsiblePayer
+        description: "Same info that MasterPortfolio.Volume segment of the responsible payer defined in the squad_saas_acquisition"
+      - name: lifecycleStagePayer
+        description: "Same info that MasterPortfolio. Lifecycle segment of the payer defined in the squad_saas_acquisition"
+      - name: lifecycleActivityPayer
+        description: "Same info that MasterPortfolio. Lifecycle activity of the payer defined in the squad_saas_acquisition"
+      - name: invoiceGrossAmount
+        description: "Same info that MasterPortfolio. Total amount of the invoice in the local currency"
+      - name: transferedCurrency
+        description: "Same info that MasterPortfolio. Currency in which the amount was transfered"
+      - name: invoiceDiscount
+        description: "Same info that MasterPortfolio. Total amount of discounts of the invoice"
+      - name: invoiceRevenue
+        description: "Same info that MasterPortfolio. Gross Revenue amount for invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * (invoiceTerm / 30) + (invoiceOperationCost prorated by number of invoices financed in the order)"
+      - name: invoiceOperationCost
+        description: "Same info that MasterPortfolio. Operation cost prorated on invoinces that have not been rejected"
+      - name: pctAdvance
+        description: "Same info that MasterPortfolio. Advance percentage"
+      - name: paymentConfirmedDate
+        description: "Same info that MasterPortfolio. Payment confirmation date in format yyyy-mm-dd "
+      - name: invoiceIssuedDate
+        description: "Same info that MasterPortfolio. Date when the invoice was issued in format yyyy-mm-dd"
+      - name: expirationDate
+        description: "Same info that MasterPortfolio. Invoice due date in format yyyy-mm-dd"
+      - name: paymentDate
+        description: "Same info that MasterPortfolio. Invoice payment date in format yyyy-mm-dd"
+      - name: invoiceTerm
+        description: "Same info that MasterPortfolio. Invoice term calculated as expirationDate - date"
+      - name: invoiceRate
+        description: "Same info that MasterPortfolio. Invoice origination fee. If it not exists is the order origination fee"
+      - name: invoiceRateFund
+        description: "Same info that MasterPortfolio. Rate fund"
+      - name: linkBO
+        description: "Same info that MasterPortfolio. link to backoffice of the order"
+      - name: invoiceCurrentTotalAmount
+        description: "Same info that MasterPortfolio. Current amount of the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. only for invoices in status = [ACTIVE, HARD_DELINQUENCY, SOFT_DELINQUENCY, DELINQUENT, RENEGOTIATION, HARD_COLLECTION] otherwise is 0"
+      - name: invoiceAmountFinanced
+        description: "Same info that MasterPortfolio. Amount of the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance. only for invoices in status after ACTIVE otherwise is 0"
+      - name: portfolioStatus
+        description: "Same info that MasterPortfolio. Current state of the invoice"
+      - name: invoiceFundRevenue
+        description: "Same info that MasterPortfolio. Fund cost = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount)  * invoiceRateFund * invoiceTerm / 30"
+      - name: clientRegisterDate
+        description: "Same info that MasterPortfolio. Customer registration date in format yyyy-mm-dd"
+      - name: clientEnrolledDate
+        description: "Same info that MasterPortfolio. Customer enrolled date in format yyyy-mm-dd"
+      - name: rankingPayer
+        description: "Same info that MasterPortfolio. Payer ranking"
+      - name: clientSector
+        description: "Same info that MasterPortfolio. Category of the customer"
+      - name: responsiblePayerSector
+        description: "Same info that MasterPortfolio. Category of the payer responsible"
+      - name: revenueOverdue
+        description: "Same info that MasterPortfolio. Income for late payment"
+      - name: invoiceCreditNoteAmount
+        description: "Same info that MasterPortfolio. Amount of credit notes"
+      - name: amountPartialPays
+        description: "Same info that MasterPortfolio. Amount of total partial pays"
+      - name: interest
+        description: "Same info that MasterPortfolio. Income for interest rate = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * invoiceRate * invoiceTerm / 30"
+      - name: rateAllIn
+        description: "Same info that MasterPortfolio. origination rate including the operation cost"
+      - name: startDate
+        description: "Same info that MasterPortfolio. Date when the interest fee begins"
+      - name: startDateFund
+        description: "Same info that MasterPortfolio. Date of invoice transfer to the fund"
+      - name: isCancelled
+        description: "Same info that MasterPortfolio. Is the invoice cancelled or annulled ? 1 = yes | 0 = not"
+      - name: mora
+        description: "Same info that MasterPortfolio. Late payment"
+      - name: suggestedRate
+        description: "Same info that MasterPortfolio. Suggested rate"
+      - name: uuid
+        description: "Same info that MasterPortfolio. Unique identifier for the invoice. in MX it includes the folio"
+      - name: refinancedDate
+        description: "Same info that MasterPortfolio. Date when the invoice was refinanced in format yyyy-mm-dd"
+      - name: isInvoiceFinanced
+        description: "Same info that MasterPortfolio. the invoice is financed? 1 = yes and 0 = not"
+      - name: subSectorId
+        description: "Same info that MasterPortfolio. Code of the subsector of the payer"
+      - name: responsiblePayerSubsector
+        description: "Same info that MasterPortfolio. Name of the subsector of the payer"
+      - name: orderHasCession
+        description: "Same info that MasterPortfolio. The order has cession? 1 = yes and 0 = not"
+      - name: orderPayerContribution
+        description: "Same info that MasterPortfolio. It has payer contribution? 1 = yes | 0 = not"
+      - name: orderHasRevolving
+        description: "Same info that MasterPortfolio. it has revolving? 1 = yes | 0 = not"
+      - name: xepelinIndex
+        description: "Same info that MasterPortfolio. New index for the sector defined by xepelin"
+      - name: indexName
+        description: "Same info that MasterPortfolio. New name of the sector"
+      - name: perspective
+        description: "Same info that MasterPortfolio. Economic perspective for each sector"
+      - name: firstOp
+        description: "Same info that MasterPortfolio. it was the first operation of the business? 1 = yes and 0 = not"
+      - name: lastOp
+        description: "Same info that MasterPortfolio. it was the last operation of the business? 1 = yes and 0 = not"
+      - name: cohort
+        description: "Same info that MasterPortfolio. cohort of the business describe as year and month in format yyyy-mm"
+      - name: analysisDate
+        description: "Date when the query was executed in format yyyy-mm-dd"
+      - name: dateEndWeekAnalyzed
+        description: "End of the week Analyzed in format yyyy-mm-dd"
+      - name: weekYearAnalyzed
+        description: "Number of week and year of the  dateEndWeekAnalyzed in format ww-yyyy"
+      - name: amountGrossActive
+        description: "invoiceGrossAmount if at the end of the week there was an active amount (unpaid) "
+      - name: difDaysPaymentExpiration
+        description: "Difference between paymentDate and expirationDate. If current date or dateEndWeekAnalyzed < expirationDate then 0. If paymentDate is null or paymentDate > current date or dateEndWeekAnalyzed then difference between currentDate or dateEndWeekAnalyzed and expirationDate"
+      - name: overdueDays
+        description: "Difference between paymentDate and expirationDate. If date (requestDate) > dateEndWeekAnalyzed then -999. If paymentDate is null or paymentDate > current date or dateEndWeekAnalyzed then difference between currentDate or dateEndWeekAnalyzed and expirationDate "
+      - name: amountActive
+        description: "Current amount active at the end of the dateEndWeekAnalyzed. pctAdvance *(invoiceGrossAmount - invoiceCreditNoteAmount - invoiceDiscount)- pagoParcial"
+      - name: status
+        description: "status of invoice at the end of the dateEndWeekAnalyzed"
+      - name: fundAtTheTime
+        description: "Fund assigned to the invoice at the end of the dateEndWeekAnalyzed"
+      - name: fundRateAtTheTime
+        description: "Fund rate applied to the  invoice at the end of the dateEndWeekAnalyzed"
+  - name: int_MasterOrderInvoice
+    description: "Detailed information of every invoices that pass "
+    meta:
+        owner: "@dataTeam"
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: date
+        description: "Issued date of the order in format yyyy-mm-dd"
+      - name: dateTimestamp
+        description: "Issued date of the order in timestamp format"
+      - name: month
+        description: "First day of the issued month of the product in format yyyy-mm-01"
+      - name: disbursementDate
+        description: "Date in wich the orderInvoice was disbursed in format yyyy-mm-dd"
+      - name: product
+        description: "Code for the product as PP = Early payment, FD = Direct financing , PF = Financed payments and PY = Non Financed payments"
+      - name: orderId
+        description: "Id of the order"
+      - name: orderStatus
+        description: "Order status name as it appers in BackOffice"
+      - name: orderInvoiceId
+        description: "Id of the order invoice"
+      - name: invoiceStatus
+        description: "Invoice status name as it appers in BackOffice"
+      - name: invoiceFol
+        description: "Invoice folio"
+      - name: invoiceScore
+        description: "Score of the invoice"
+      - name: clientIdentifier
+        description: "Unique national identifier of the businesses that request de order"
+      - name: issuerIdentifier
+        description: "Unique national identifier of the invoice issuer"
+      - name: payerIdentifier
+        description: "Unique national identifier of the payer issuer"
+      - name: responsiblePayerIdentifier
+        description: "Unique national identifier of the responsible for paying to Xepelin"
+      - name: invoiceGrossAmount
+        description: "Amount at the time of issuing the invoice in national currency"
+      - name: transferedCurrency
+        description: "Currency in which the amount was transfered"
+      - name: invoiceDiscount
+        description: "Total amount of associated  discounts to the invoice  as appers in BackOffice"
+      - name: invoiceRevenue
+        description: "Gross revenue amount for then invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * (invoiceRate / 30) * invoiceTerm + (invoiceOperationCost prorated by number of invoices financed in the order without IVA tax)"
+      - name: invoiceRevenueTax
+        description: "Gross revenue amount for then invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * (invoiceRate / 30) * invoiceTerm + (invoiceOperationCost prorated by number of invoices financed in the order )"
+      - name: invoiceOperationCost
+        description: "Operation cost prorated on invoices that have not been rejected"
+      - name: pctAdvance
+        description: "Advance percentage"
+      - name: invoiceIssuedDate
+        description: "Date when the invoice was issued in format yyyy-mm-dd"
+      - name: expirationDate
+        description: "Invoice due date in format yyyy-mm-dd"
+      - name: paymentDate
+        description: "Date when the invoice was paid in format yyyy-mm-dd"
+      - name: invoiceTerm
+        description: "Invoice term calculated as expirationDate - date"
+      - name: invoiceRate
+        description: "Invoice origination rate. If it not exists is the order origination rate"
+      - name: invoiceCurrentTotalAmount
+        description: "Current amount of the invoice. It tends to zero as the invoice gets paid (considering partial pays) just for the ever active invoices calculated as follows =(invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. When invoice status in DEFAULT and HARD_DELIQUENCY the value of it becomes zero"
+      - name: invoiceAmountFinanced
+        description: "Amount financed of the invoice. Just for the ever active invoices calculated as follows = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance"
+      - name: portfolioStatus
+        description: "Current collection stage of the invoice"
+      - name: invoiceCreditNoteAmount
+        description: "Amount of associated credit notes to the invoice. It only consider those was issued before the invoice gets financed and where scraped on time"
+      - name: amountPartialPays
+        description: "Total amount of partial pays"
+      - name: interest
+        description: "Income for interest rate calculated as follows = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * (invoiceRate / 30) * invoiceTerm"
+      - name: rateAllIn
+        description: "Origination rates plus the origination cost as rate without IVA tax"
+      - name: rateAllInTax
+        description: "Origination rates plus the origination cost as rate"
+      - name: isCancelled
+        description: "Indicates if the invoice gets cancelled. 1 = cancelled or 0 = non cancelled"
+      - name: mora
+        description: "For paid invoices indicates de days between payment date and expiration date. For active invoices indicates the days between the current date and the expiration date. If the value is negative then the invoice it's on time and if the value is positive then the invoice is overdue"
+      - name: suggestedRate
+        description: "Suggested rate provided for the pricing model. If possible it is obtained for each invoice, if not it will show the rate of the order."
+      - name: uuid
+        description: "Unique identifier for the invoice assassinated by the local fiscal entity"
+      - name: isInvoiceFinanced
+        description: "Indicates if the invoice was ever active. 1 = yes or 0 = no"
+      - name: orderHasCession
+        description: "The order has cession? 1 = yes and 0 = not. Only apply for Payments"
+      - name: orderPayerContribution
+        description: "It has payer contribution? 1 = yes | 0 = not"
+      - name: orderHasRevolving
+        description: "it has revolving? 1 = yes | 0 = not"
+      - name: defaultProbability
+        description: "Probability of default for each order invoice"
+      - name: orderInvoiceIdRevolving
+        description: "The orderInvoiceId of the invoice that has the revolving"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - orderInvoiceId
+            - country
+  - name: int_MasterCustomerData
+    description: "Detailed information for customers registered, MX and CL "
+    meta:
+        owner: "@LylEscarra"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - identifier
+            - country
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: businessId
+        description: "Id of the business"
+      - name: identifier
+        description: "National id of the customer"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Legal name of the customer"
+      - name: registerDate
+        description: "Business registration date"
+      - name: enrollmentDate
+        description: "Date of customer enrollment"
+      - name: startActivitiesDate
+        description: "Customer start date of activities"
+      - name: sector
+        description: "Category of the customer, Otherwise null"
+      - name: subSector
+        description: "Subsector of customer"
+      - name: subSectorId
+        description: "Code of the subsector of customer"
+      - name: typePerson
+        description: "Type of taxpayer, Otherwise null"
+      - name: isEnrolled
+        description: "Indicates if the client is enrolled. 1 = enrolment active, 0 = inactive enrolment, null = it is not enrolled"
+      - name: agreementActive
+        description: "Indicates if the agreement is active, 1 = active"
+      - name: agreementGroupId
+        description: "Indicates if the id of the agreement."
+      - name: agreementGroup
+        description: "Name of the agreement."
+      - name: xepelinIndex
+        description: "New index for the sector defined by xepelin"
+      - name: indexName
+        description: "New name of the sector"
+      - name: perspective
+        description: "Economic perspective for each sector"
+      - name: activationDate
+        description: "Date of first operation"
+      - name: cohort
+        description: "Cohort of the business describe as year and month in format yyyy-mm"
+      - name: activationProduct
+        description: "Product of first operation"
+      - name: sectorEnviroment
+        description: "Sector of customer defined by its sells in the last 6 months. If it's null then shows the sector of the customer."
+      - name: corpEnviroment
+        description: "Percentage of sells of the customer where the payer is a corp. Considering sells of the last 6 months."
+      - name: activeBalance
+        description: "Sum of current amount = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. only for invoices in status = [ACTIVE, HARD_DELINQUENCY, SOFT_DELINQUENCY, DELINQUENT, RENEGOTIATION, HARD_COLLECTION] otherwise is 0"
+      - name: totalAmountFinanced
+        description: "Sum of amount financed = SUM((invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance) only for invoices in status after ACTIVE otherwise is 0"
+      - name: lastPaymentDate
+        description: "Last payment date in format yyyy-mm-dd"
+      - name: productMix
+        description: "Combination of products, in order by date operation"
+      - name: operationsAR
+        description: "Quantity of operations AR. AR operations= FD and PP"
+      - name: operationsAP
+        description: "Quantity of operations AP. AP operations= PY and PF"
+      - name: isActive60Days
+        description: "Indicates if the client is active, 1 = active"
+      - name: nbrClientsLastYear 
+        description: "Quantity of clients in the last 365 days"
+      - name: nbrSuppliersLastYear
+        description: "Quantity of suppliers in the last 365 days"
+      - name: amountSalesLastYear
+        description: "Sales in the last 365 days"
+      - name: amountPurchasesLastYear
+        description: "Purchases in the last 365 days"
+      - name: amountProfitLastYear
+        description: "Profit in the last 365 days. lastProfit = lastSales - lastShops"
+      - name: avgMonthlySales
+        description: "Average montlhy sales  in the last 365 days"
+      - name: avgMonthlyPurchases
+        description: "Average montlhy purchases  in the last 365 days"
+      - name: totalCreditLine
+        description: "Credit line amount multiplied by active entity feature"
+      - name: creditLineAvailable
+        description: "Credit line amount multiplied available"
+      - name: nbrIssuedInvoicesLastYear
+        description: "Quantity of invoices issued in the last 365 days "
+      - name: nbrReceivedInvoicesLastYear
+        description: "Quantity of invoices received in the last 365 days "
+      - name: prcInvoicesCancelledLastYear
+        description: "Percentage of invoices cancelled in the last 365 days"
+      - name: avgMonthlyInvoiceCancelledLastYear
+        description: "Average montlhy of invoices cancelled in the last 365 dyas"
+      - name: assignedChannel
+        description: "Chosen source for the business"
+      - name: amountOverdue0_5Days
+        description: "Current Amount Overdue between 0 and 5 days, does not include the 0"
+      - name: amountOverdue5_15Days
+        description: "Current Amount Overdue between 5 and 15 days, does not include the 5"
+      - name: amountOverdue15_30Days
+        description: "Current Amount Overdue between 15 and 30 days, does not include the 15"
+      - name: amountOverdue30_60Days
+        description: "Current Amount Overdue between 30 and 60 days, does not include the 30"
+      - name: amountOverdue60_90Days
+        description: "Current Amount Overdue between 60 and 90 days, does not include the 60"
+      - name: amountOverdue90_120Days
+        description: "Current Amount Overdue between 90 and 120 days, does not include the 90"
+      - name: amountOverdue120_180Days
+        description: "Current Amount Overdue between 120 and 180 days, does not include the 120"
+      - name: amountOverdue180Days
+        description: "Current Amount Overdue more of 180 days"
+      - name: lifecycleStage
+        description: "Detailed category indicating the current state of the customer in its relationship with Xepelin. It is a subset of lifecycleActivity"
+      - name: lifecycleActivity
+        description: "Summary category indicating the current state of the customer in its relationship with Xepelin"
+      - name: nbrOrdersLast90d
+        description: "Number of orders in the last 90 days"
+      - name: bcgOK
+        description: "The Customer's background check is complete (boolean). Comes from `DataKam_Global.BGCNotion`"
+      - name: buroOK
+        description: "The Customer has authorized access to Buro (Mexico only)"
+      - name: userSegmentVolume
+        description: "Segment determined from its sales volume"
+      - name: form69
+        description: "Indicates whether the customer complies with sat69 or SAT69B, MX only."
+      - name: cost
+        description: "Customer costs, MX only"
+      - name: expenses
+        description: "Customer expenses, MX only"
+      - name: salaries
+        description: "Customer salaries, MX only"
+      - name: commercialCategory
+        description: "Customer commercial category"
+      - name: typeClientManagement
+        description: "Last classification of the client according to the management of its operations. Definition of customer success area "
+      - name: lastPfRate
+        description: "Rate of its last Payments with financing (PF) order in the lasts 6 months"
+      - name: lastFdRate
+        description: "Rate of its last direct financing (FD) order in the lasts 6 months, computed as a weighted average (by financed amount) of its invoiceRates"
+      - name: riskAdjustFlag
+        description: "1 for business with riskAdjust, null for business without information, otherwise 0"
+      - name: RegisterDateUser
+        description: "First registration date of a user"        
+  - name: int_OrderStatusChanged
+    description: "Record of status change over the orders by users in the backoffice"
+    meta:
+        owner: "@LylEscarra"
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: orderId
+        description: "Id of the order"
+      - name: product
+        description: "Product of the order"
+      - name: createdAt
+        description: "Date and time the order was issued"
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: user
+        description: "Backoffice user name"
+      - name: userIsSupervisor
+        description: "Backoffice user is supervisor?"
+      - name: userRoleName
+        description: "Backoffice user rol name"
+      - name: userEmail
+        description: "Backoffice user mail"
+      - name: beforeDate
+        description: "Date before the action over the order was executed in format yyyy-mm-dd hh:mm:ss UTC"
+      - name: actionDate
+        description: "Date when the action over the order was executed in format yyyy-mm-dd hh:mm:ss UTC"
+      - name: hoursDiff
+        description: "difference in hours between beforeDate and dateAction"
+      - name: workHoursDiff
+        description: "difference in works hours between beforeDate and dateAction"
+      - name: statusBefore
+        description: "Before status name of Invoice as it appers in BackOffice"
+      - name: statusAfter
+        description: "Invoice status name as it appers in BackOffice"
+      - name: detailStatusChange
+        description: "Detail of changed Invoice status"
+      - name: accumulatedHours
+        description: "Accumulated time in hours"
+      - name: accumulatedWorkHours
+        description: "Accumulated time in works hours"
+  - name: int_OrderInvoiceStatusChanged
+    description: "Record of status change over the invoices by users in the backoffice"
+    meta:
+        owner: "@LylEscarra"
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: createdAt
+        description: "Date and time the invoice was issued"
+      - name: orderInvoiceId
+        description: "Id of the invoice"
+      - name: invoiceFol
+        description: "Folio of the invoice"
+      - name: orderId
+        description: "Id of the order"
+      - name: product
+        description: "Product of the order"
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: user
+        description: "Backoffice user name"
+      - name: userIsSupervisor
+        description: "Backoffice user is supervisor?"
+      - name: userRoleName
+        description: "Backoffice user rol name"
+      - name: userEmail
+        description: "Backoffice user mail"
+      - name: beforeDate
+        description: "Date before the action over the order was executed in format yyyy-mm-dd hh:mm:ss UTC"
+      - name: dateAction
+        description: "Date when the action over the order was executed in format yyyy-mm-dd hh:mm:ss UTC"
+      - name: hoursDiff
+        description: "difference in hours between beforeDate and dateAction"
+      - name: workHoursDiff
+        description: "difference in works hours between beforeDate and dateAction"
+      - name: statusBefore
+        description: "Before status name of Invoice as it appers in BackOffice"
+      - name: statusAfter
+        description: "Invoice status name as it appers in BackOffice"
+      - name: detailStatusChange
+        description: "Detail of changed Invoice status"
+      - name: accumulatedHours
+        description: "Accumulated time in hours"
+      - name: accumulatedWorkHours
+        description: "Accumulated time in works hours"
+  - name: int_MasterRelationships
+    description: "Record of business relationships with your customers"
+    meta:
+        owner: "@LylEscarra"
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: businessIdentifier
+        description: "National id of the business"
+      - name: stakeholderIdentifier
+        description: "National id of the stakeholder"
+      - name: salesAmount
+        description: "Sales in the last 365 days"
+      - name: qtyMonthsSales
+        description: "Number of months in the last 365 days with sales greater than 0"
+      - name: daysRelationShip
+        description: "Days elapsed since first operation in the last 365 days"
+      - name: salesCanceledAmount
+        description: "Amount of sales canceled in the last 365 days"
+      - name: firstOperation
+        description: "Date of first operation"
+      - name: salesLastMonth
+        description: "Sales in the last month"
+      - name: salesLast6Months
+        description: "Sales in the last six months"
+      - name: recurrence
+        description: "Recurrence in days"
+      - name: pctCrossSales
+        description: "percentage of cross-sales = amount received/amount issued"
+      - name: hasInvoiceHistory
+        description: "mark of loading of historical information of the business, 1=Yes"
+  - name: int_MasterTgr_cl
+    description: "Master TGR of CL Clients "
+    meta:
+      technical owner: "@ConiContreras"
+      business owner: "@DiegoStrobl"
+    columns:
+      - name: identifier
+        description: "National id of business"
+        tests:
+          - unique
+          - not_null
+      - name: name
+        description: "Name of business"
+      - name: country
+        description:  "Code country as MX = Mexico and CL = Chile"
+      - name: businessId
+        description: "Internal consecutive code of the business"
+      - name: debtType
+        description: "Debt status towards TGR"
+      - name: updatedAt
+        description: "Last scraping date"
+      - name: numberDebtCertificate
+        description: "Number of Debt Certificates from TGR"
+      - name: netDebtAmount
+        description: "Net debt amount of past due date 'folios'"
+      - name: readjustmentDebtAmount
+        description: "Readjustment amount from debt of past due date 'folios' "
+      - name: interestDebtAmount
+        description: "Interest amount of past due date 'folios'"
+      - name: penaltyDebtAmount
+        description: "Penalty amount of past due date 'folios'"
+      - name: totalDebtAmount
+        description: "Total debt amount of past due date 'folios' "
+      - name: countFolioDebtsCertificate
+        description: "Number of 'folios' contained in the Debt Cerfiticate past due date"
+      - name: countFolioAgreementDebts
+        description: "Number of 'folios' contained in Agreement Debts"
+      - name: countFolAgreement
+        description: "Number of 'folios' contained in an agreement with TGR"
+      - name: numberTGRAgreements
+        description: "Number of agreements with TGR"
+      - name: totalDebtAmountAgreement
+        description: "Total refinanced debt contained in agreements with TGR"
+      - name: paidFeesAmountAgreement
+        description: "Total fee amounts of refinanced debt paid to TGR "
+      - name: overdueFeesAmountAgreement
+        description: "Total overdue fees amount of refinanced debt with TGR "
+      - name: grantedFeesAgreement
+        description: "Total number of granted fees of refinanced debt with TGR"
+      - name: feestoExpireAgreement
+        description: "Number of fees to expire of refinanced debt with TGR"
+      - name: overdueFeesAgreement
+        description: "Number of overdue fees of refinanced debt with TGR"
+      - name: paidfeesAgreement
+        description: "Number of paid fees of refinanced debt with TGR"
+      - name: overdueFeesGreater3
+        description: "Numer of agreements containing more that 3 overdue fees of refinanced debt with TGR"
+      - name: maxOverdueFees
+        description: "Maximum number of overdue fees on all the business agreements"
+      - name: tagTGR
+        description: "Xepelin TGR definition = Approved / Rejected / Exceptional"
+      - name: tgrDebtFoliosOutOfAgreement
+        description: "number of due folios without agreement"
+
+  - name: int_MasterOrderInvoiceFunds
+    description: "Detailed information for every invoice assignated to a fund"
+    meta:
+      owner: "@dataTeam"
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: orderInvoiceId
+        description: "Id of the order invoice"
+      - name: fundName
+        description: "Name of the assignated fund"
+      - name: fundId
+        description: "Id of the assignated fund"
+      - name: invoiceRateFund
+        description: "Rate at which the invoice was assigned to the fund"
+      - name: invoiceFundRevenue
+        description: "Amount earned by the fund. The formula depends of the way to calculate de interest (Present Value or 30D)"
+      - name: startDateFund
+        description: "Date in which the invoice was assigned to the fund"
+
+  - name: int_MasterCredits
+    description: "Detailed information of every operation type credit that pass"
+    meta:
+      owner: "@dataTeam"
+    columns:
+      - name: country
+        description: "Code country as MX = Mexico and CL = Chile"
+      - name: date
+        description: "Issued date of the order in format yyyy-mm-dd"
+      - name: dateTimestamp
+        description: "Issued date of the order in timestamp format"
+      - name: month
+        description: "First day of the issued month of the product in format yyyy-mm-01"
+      - name: orderId
+        description: "Id of the credit"
+      - name: type
+        description: "Type of credit (RENEGOTIATION or NORMAL)"
+      - name: orderStatus
+        description: "Credit status name as it appers in BackOffice"
+      - name: orderInvoiceId
+        description: "Id of the credit fees"
+      - name: invoiceStatus
+        description: "Status of the credit fees as it appers in BackOffice"
+      - name: invoiceTerm
+        description: "Invoice term calculated as expirationDate - date"
+      - name: issuerIdentifier
+        description: "Unique national identifier of the credit issuer"
+      - name: issuer
+        description: "Name of the credit issuer"
+      - name: payerIdentifier
+        description: "Unique national identifier of the credit payer'"
+      - name: payer
+        description: "Name of the credit payer"
+      - name: expirationDate
+        description: "Credit due date in format yyyy-mm-dd"
+      - name: paymentDate
+        description: "Date when the credit was paid in format yyyy-mm-dd"
+      - name: mora
+        description: "For paid credit fees indicates de days between payment date and expiration date. For active credit fees indicates the days between the current date and the expiration date. If the value is negative then the credit fees it's on time and if the value is positive then the credit fees is overdue"
+      - name: invoiceRevenue
+        description: "Interest for credit fees."
+      - name: invoiceGrossAmount
+        description: "Amount at the time of issuing the invoice in national currency"
+      - name: invoiceAmountFinanced
+        description: "Amount financed of the credit. Just for the ever active credit."
+      - name: amountPartialPays
+        description: "Amount already paid"
+      - name: isInvoiceFinanced
+        description:  "the credit fees is financed? 1 = yes and 0 = not"
+      - name: invoiceCurrentTotalAmount
+        description: "Current amount of the credit fees = credit fees gross amount - partial pays "
+      - name: portfolioStatus
+        description: "Current state of the credit fees"
+      - name: startDate
+        description: "Date when the credit was issued in format yyyy-mm-dd"
+      - name: invoiceRate
+        description: "Credit origination rate."
+      - name: orderInterest
+        description: "Credit fees interest"     
+  - name: int_BusinessesSegment_cl
+    description: "Segment information about payers CL"
+    meta:
+      owner: "@ConstanzaContreras"
+    columns:
+      - name: identifier
+        description: "National id of business"
+        tests:
+          - unique
+          - not_null
+      - name: sales12MonthsClp
+        description: "Sales of the last 12 months "
+      - name: salesSection
+        description: "SII segment according to Chile's 13 segment classification"
+      - name: userSegmentVolume
+        description: "user Segment according to salesSection"
+      - name: salesSectionAdjusted
+        description: "Adjusted segment using the logic= 1) business is on the investment grade sheet, 2) business belongs to an agreement,  3) business contained on economic group, 4) anual sales for enrolled and active businesses, 5) SII data for unknown businesses"
+      - name: userSegmentVolumeAdjusted
+        description: "user Segment according to salesSectionAdjusted"
+      - name: criterion
+        description: "user segment assignment criteria"
+        
+  - name: int_MasterBuroMoral
+    description: "Information about Buro related to pm entities"
+    meta:
+        owner: "@NicolasRestrepo"
+    columns:
+      - name: identifier
+        description: "National id of the entity"
+        tests:
+          - unique
+          - not_null
+      - name: buroId
+        description: "Internal consecutive code of the buro information"
+      - name: hasHistory
+        description: "1 if the entity has had a credit 0 else"
+        tests:
+          - not_null
+      - name: initialBalanceActive
+        description: "Initial amount of active credits"
+      - name: openCredits
+        description: "Number of active credits"
+      - name: initialBalanceClosed
+        description: "Initial amount of closed credits"
+      - name: closedCredits
+        description: "Number of closed credits"
+      - name: currentAmountActive
+        description: "Amount with no delay"
+      - name: currentAmountActive
+        description: "Active amount with no delay"
+      - name: dueTo29DaysActive
+        description: "Active amount with a delay of 0 to 29 days"
+      - name: dueTo59DaysActive
+        description: "Active amount with a delay of 30 to 59 days"
+      - name: dueTo89DaysActive
+        description: "Active amount with a delay of 60 to 89 days"
+      - name: dueTo119DaysActive
+        description: "Active amount with a delay of 90 to 119 days"
+      - name: dueTo179DaysActive
+        description: "Active amount with a delay of 120 to 179 days"
+      - name: dueToGreaterThan180DaysActive
+        description: "Active amount with a delay greater than 180 days"
+      - name: openCredits29Days
+        description: "Number of credits that have an active amount in the segment dueTo29Days"
+      - name: openCredits59Days
+        description: "Number of credits that have an active amount in the segment dueTo59Days"
+      - name: openCredits89Days
+        description: "Number of credits that have an active amount in the segment dueTo89Days"
+      - name: openCredits119Days
+        description: "Number of credits that have an active amount in the segment dueTo119Days"
+      - name: openCredits179Days
+        description: "Number of credits that have an active amount in the segment dueTo179Days"
+      - name: openCreditsGreaterThan180Days
+        description: "Number of credits that have an active amount in the segment dueToGreaterThan180Days"
+      - name: breakdown4
+        description: "Number of closed credits that have fallen in the segment dueTo89Days"
+      - name: breakdown5
+        description: "Number of closed credits that have fallen in the segment dueTo119Days"
+      - name: breakdown6
+        description: "Number of closed credits that have fallen in the segment dueTo179Days"
+      - name: breakdown7
+        description: "Number of closed credits that have fallen in the segment dueToGreaterThan180Days"
+      - name: consultations3Months
+        description: "Number of consultations made by different institutions in the last 3 months"
+      - name: consultations12Months
+        description: "Number of consultations made by different institutions in the last 12 months"
+      - name: consultations24Months
+        description: "Number of consultations made by different institutions in the last 24 months"
+      - name: consultationsGreaterThan24Months
+        description: "Number of consultations made by different institutions"
+  - name: int_MasterBuroFisica
+    description: "Information about Buro related to pf entities"
+    meta:
+        owner: "@NicolasRestrepo"
+    columns:
+      - name: identifier
+        description: "National id of the entity"
+        tests:
+          - unique
+          - not_null
+      - name: score
+        description: "Score assigned by Buro de Credito"
+      - name: buroId
+        description: "Internal consecutive code of the buro information"
+      - name: hasHistory
+        description: "1 if the entity has had a credit 0 else"
+        tests:
+          - not_null
+      - name: currentBalance
+        description: "Active amount with no delay"
+      - name: balanceDue
+        description: "Active amount with delay"
+      - name: delays
+        description: "0 if no delays, 1 if the entity has delays but not greater than 29 days and 2 if the entity has delays greater than 29 days"
+      - name: consultations3Months
+        description: "Number of consultations made by different institutions in the last 3 months"
+      - name: consultations6Months
+        description: "Number of consultations made by different institutions in the last 6 months"
+      - name: consultations12Months
+        description: "Number of consultations made by different institutions in the last 12 months"
+  - name: int_BusinessesSegment_mx
+    description: "Segment information about payers MX"
+    meta:
+      owner: "@ConstanzaContreras"
+    columns:
+      - name: identifier
+        description: "National id of business"
+        tests:
+          - unique
+          - not_null
+      - name: sales12MonthsMdp
+        description: "Sales of the last 12 months "
+      - name: userSegmentVolumeAdjusted
+        description: "user Segment according to salesSectionAdjusted"
+      - name: criterion
+        description: "user segment assignment criteria"
+        
+  - name: int_MasterCreditLines
+    description: "Complete information of credit lines (CL and MX) for businesses and agreements."
+    meta:
+      owner: "@AndresCervantes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - country
+            - businessId
+    columns:
+      - name: country
+        description: "[CL, MX]"
+        tests:
+          - not_null
+      - name: businessId
+        description: "Xepelin's national ID of business."
+        tests:
+          - not_null
+      - name: identifier
+        description: "RUT for CL; RFC for MX."
+        tests:
+          - not_null
+      - name: creditLineAmount
+        description: "Original amount assigned by Risk team."
+      - name: isActive
+        description: "Boolean [0,1]: 0 if frozen, 1 otherwise; null means the credit line has never been frozen/unfrozen."
+      - name: activeCreditLineAmount
+        description: "Current amount of the credit line."
+      - name: createdAt
+        description: "Creation of the credit line."
+      - name: updatedAt
+        description: "Last update of the credit line."
+      - name: initialFreezeAction
+        description: "Frist time the credit line was frozen/unfrozen."
+      - name: lastFreezeAction
+        description: "Last time the credit line was frozen/unfrozen."
+      - name: isHellNo
+        description: "Boolean [null, 0, 1]: 1 means hell-no; 0 means OK; null means the client has not been hell-no-processed."
+      - name: inBlocklist
+        description: "Boolean [null, 0, 1]: 1 means blockslisted; 0 means whitelisted; null means the client has never been blocklisted."
+      - name: blocklistReason
+        description: "Reason why the client is (or was) blockslisted."
+        
+  - name: int_MasterAgreements_gl
+    description: "Consolidated information of agreements for CL and MX."
+    meta:
+      owner: "@AndresCervantes"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - country
+            - agreementGroupId
+            - agreementId
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - country
+            - agreementId
+    columns:
+      - name: country
+        description: "[CL, MX]"
+        tests:
+          - not_null
+      - name: agreementGroupId
+        description: "ID of the agreement that different companies fall into."
+        tests:
+          - not_null
+      - name: agreementGroupName
+        description: "Name of the agreement that different companies fall into."
+        tests:
+          - not_null
+      - name: agreementId
+        description: "ID of the agreement for a specific company."
+        tests:
+          - not_null
+      - name: payerIdentifier
+        description: "RUT/RFC of the company with the agreement."
+        tests:
+          - not_null
+      - name: payerName
+        description: "Name of the company with the agreement."
+        tests:
+          - not_null

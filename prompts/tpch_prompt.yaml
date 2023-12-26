@@ -1,102 +1,235 @@
-    _type: prompt
-    input_variables:
-        ["input"]
-    template: 
-        '''Given below are the table structures in analytics database raw schema in snowflake cloud database
-              CUSTOMER (
-              C_CUSTKEY NUMBER(38,0),
-              C_NAME VARCHAR(25),
-              C_ADDRESS VARCHAR(40),
-              C_NATIONKEY NUMBER(38,0),
-              C_PHONE VARCHAR(15),
-              C_ACCTBAL NUMBER(12,2),
-              C_MKTSEGMENT VARCHAR(10),
-              C_COMMENT VARCHAR(117)
-          );
-          LINEITEM (
-              L_ORDERKEY NUMBER(38,0),
-              L_PARTKEY NUMBER(38,0),
-              L_SUPPKEY NUMBER(38,0),
-              L_LINENUMBER NUMBER(38,0),
-              L_QUANTITY NUMBER(12,2),
-              L_EXTENDEDPRICE NUMBER(12,2),
-              L_DISCOUNT NUMBER(12,2),
-              L_TAX NUMBER(12,2),
-              L_RETURNFLAG VARCHAR(1),
-              L_LINESTATUS VARCHAR(1),
-              L_SHIPDATE DATE,
-              L_COMMITDATE DATE,
-              L_RECEIPTDATE DATE,
-              L_SHIPINSTRUCT VARCHAR(25),
-              L_SHIPMODE VARCHAR(10),
-              L_COMMENT VARCHAR(44)
-          );
-          NATION (
-              N_NATIONKEY NUMBER(38,0),
-              N_NAME VARCHAR(25),
-              N_REGIONKEY NUMBER(38,0),
-              N_COMMENT VARCHAR(152)
-          );
-          PART (
-              P_PARTKEY NUMBER(38,0),
-              P_NAME VARCHAR(55),
-              P_MFGR VARCHAR(25),
-              P_BRAND VARCHAR(10),
-              P_TYPE VARCHAR(25),
-              P_SIZE NUMBER(38,0),
-              P_CONTAINER VARCHAR(10),
-              P_RETAILPRICE NUMBER(12,2),
-              P_COMMENT VARCHAR(23)
-          );
-          PARTSUPP (
-              PS_PARTKEY NUMBER(38,0),
-              PS_SUPPKEY NUMBER(38,0),
-              PS_AVAILQTY NUMBER(38,0),
-              PS_SUPPLYCOST NUMBER(12,2),
-              PS_COMMENT VARCHAR(199)
-          );
-          REGION (
-              R_REGIONKEY NUMBER(38,0),
-              R_NAME VARCHAR(25),
-              R_COMMENT VARCHAR(152)
-          );
-          SUPPLIER (
-              S_SUPPKEY NUMBER(38,0),
-              S_NAME VARCHAR(25),
-              S_ADDRESS VARCHAR(40),
-              S_NATIONKEY NUMBER(38,0),
-              S_PHONE VARCHAR(15),
-              S_ACCTBAL NUMBER(12,2),
-              S_COMMENT VARCHAR(101)
-          );
-          ORDERS (
-              O_ORDERKEY NUMBER(38,0),
-              O_CUSTKEY NUMBER(38,0),
-              O_ORDERSTATUS VARCHAR(1),
-              O_TOTALPRICE NUMBER(12,2),
-              O_ORDERDATE DATE,
-              O_ORDERPRIORITY VARCHAR(15),
-              O_CLERK VARCHAR(15),
-              O_SHIPPRIORITY NUMBER(38,0),
-              O_COMMENT VARCHAR(79)
-          );
-                  take user questions and response back with sql query.
-              example : 
-              user question : give me the number of orders placed in last 10 days
-              your generated sql query : select o_orderdate , count(*) from analytics.raw.orders  where o_orderdate between current_date()-10 and current_date() group by o_orderdate ;
-              example :
-              user question : tell me top 3 nations having the maximum orders
-              your generated sql query : select n.n_name , count(*) as order_count from analytics.raw.orders o 
-                                          inner join analytics.raw.customer c on o.o_custkey = c.c_custkey
-                                          inner join analytics.raw.nation n on c.c_nationkey = n.n_nationkey
-                                          group by n.n_name order by order_count desc limit 3
-                                          ;
-              example :
-              user_question : give me the name and address of suppliers for which the available quatity is minimum
-              your generated sql query :select distinct s.s_name ,s.s_address
-                                          from analytics.raw.part p
-                                          inner join analytics.raw.partsupp ps on p.p_partkey = ps.ps_partkey
-                                          inner join analytics.raw.supplier s on ps.ps_suppkey = s.s_suppkey
-                                          where p.p_partkey in (select ps2.ps_partkey  from analytics.raw.partsupp ps2 order by ps_availqty asc limit 1 );
-              user question : {input}
-              your generated sql query : '''
+_type: prompt
+input_variables: ["input"]
+template: |
+  'Given below are the table structures in analytics database raw schema in Big Query cloud database (use SQL Big Query Language):
+    - name: int_MasterOrderInvoice
+      description: "Detailed information of every invoice that passes"
+      meta:
+        owner: "@dataTeam"
+      columns:
+        - name: country
+          description: "Code country as MX = Mexico and CL = Chile"
+        - name: date
+          description: "Issued date of the order in format yyyy-mm-dd"
+        - name: dateTimestamp
+          description: "Issued date of the order in timestamp format"
+        - name: month
+          description: "First day of the issued month of the product in format yyyy-mm-01"
+        - name: disbursementDate
+          description: "Date in which the orderInvoice was disbursed in format yyyy-mm-dd"
+        - name: product
+          description: "Code for the product as PP = Early payment, FD = Direct financing, PF = Financed payments and PY = Non Financed payments"
+        - name: orderId
+          description: "Id of the order"
+        - name: orderStatus
+          description: "Order status name as it appears in BackOffice"
+        - name: orderInvoiceId
+          description: "Id of the order invoice"
+        - name: invoiceStatus
+          description: "Invoice status name as it appears in BackOffice"
+        - name: invoiceFol
+          description: "Invoice folio"
+        - name: invoiceScore
+          description: "Score of the invoice"
+        - name: clientIdentifier
+          description: "Unique national identifier of the businesses that request the order"
+        - name: issuerIdentifier
+          description: "Unique national identifier of the invoice issuer"
+        - name: payerIdentifier
+          description: "Unique national identifier of the payer issuer"
+        - name: responsiblePayerIdentifier
+          description: "Unique national identifier of the responsible for paying to Xepelin"
+        - name: invoiceGrossAmount
+          description: "Amount at the time of issuing the invoice in national currency"
+        - name: transferedCurrency
+          description: "Currency in which the amount was transferred"
+        - name: invoiceDiscount
+          description: "Total amount of associated discounts to the invoice as appears in BackOffice"
+        - name: invoiceRevenue
+          description: "Gross revenue amount for the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * (invoiceRate / 30) * invoiceTerm + (invoiceOperationCost prorated by number of invoices financed in the order without IVA tax)"
+        - name: invoiceRevenueTax
+          description: "Gross revenue amount for the invoice = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance * (invoiceRate / 30) * invoiceTerm + (invoiceOperationCost prorated by number of invoices financed in the order)"
+        - name: invoiceOperationCost
+          description: "Operation cost prorated on invoices that have not been rejected"
+        - name: pctAdvance
+          description: "Advance percentage"
+        - name: invoiceIssuedDate
+          description: "Date when the invoice was issued in format yyyy-mm-dd"
+        - name: expirationDate
+          description: "Invoice due date in format yyyy-mm-dd"
+        - name: paymentDate
+          description: "Date when the invoice was paid in format yyyy-mm-dd"
+        - name: invoiceTerm
+          description: "Invoice term calculated as expirationDate - date"
+        - name: invoiceRate
+          description: "Invoice origination rate. If it not exists is the order origination rate"
+        - name: invoiceCurrentTotalAmount
+          description: "Current amount of the invoice. It tends to zero as the invoice gets paid (considering partial pays) just for the ever active invoices calculated as follows = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. When invoice status in DEFAULT and HARD_DELINQUENCY the value of it becomes zero"
+        - name: invoiceAmountFinanced
+          description: "Amount financed of the invoice. Just for the ever active invoices calculated as follows = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance"
+
+    - name: int_MasterCustomerData
+  description: "Detailed information of customer data"
+  meta:
+    owner: "@dataTeam"
+  columns:
+    - name: country
+      description: "Code country as MX = Mexico and CL = Chile"
+    - name: businessId
+      description: "Id of the business"
+    - name: identifier
+      description: "National id of the customer"
+    - name: name
+      description: "Legal name of the customer"
+    - name: registerDate
+      description: "Business registration date"
+    - name: enrollmentDate
+      description: "Date of customer enrollment"
+    - name: startActivitiesDate
+      description: "Customer start date of activities"
+    - name: sector
+      description: "Category of the customer, Otherwise null"
+    - name: subSector
+      description: "Subsector of customer"
+    - name: subSectorId
+      description: "Code of the subsector of customer"
+    - name: typePerson
+      description: "Type of taxpayer, Otherwise null"
+    - name: isEnrolled
+      description: "Indicates if the client is enrolled. 1 = enrolment active, 0 = inactive enrolment, null = it is not enrolled"
+    - name: agreementActive
+      description: "Indicates if the agreement is active, 1 = active"
+    - name: agreementGroupId
+      description: "Indicates if the id of the agreement."
+    - name: agreementGroup
+      description: "Name of the agreement."
+    - name: xepelinIndex
+      description: "New index for the sector defined by xepelin"
+    - name: indexName
+      description: "New name of the sector"
+    - name: perspective
+      description: "Economic perspective for each sector"
+    - name: activationDate
+      description: "Date of first operation"
+    - name: cohort
+      description: "Cohort of the business describe as year and month in format yyyy-mm"
+    - name: activationProduct
+      description: "Product of first operation"
+    - name: sectorEnviroment
+      description: "Sector of customer defined by its sells in the last 6 months. If it's null then shows the sector of the customer."
+    - name: corpEnviroment
+      description: "Percentage of sells of the customer where the payer is a corp. Considering sells of the last 6 months."
+    - name: activeBalance
+      description: "Sum of current amount = (invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance - amountPartialPays. only for invoices in status = [ACTIVE, HARD_DELINQUENCY, SOFT_DELINQUENCY, DELINQUENT, RENEGOTIATION, HARD_COLLECTION] otherwise is 0"
+    - name: totalAmountFinanced
+      description: "Sum of amount financed = SUM((invoiceGrossAmount - invoiceDiscount - invoiceCreditNoteAmount) * pctAdvance) only for invoices in status after ACTIVE otherwise is 0"
+    - name: lastPaymentDate
+      description: "Last payment date in format yyyy-mm-dd"
+    - name: productMix
+      description: "Combination of products, in order by date operation"
+    - name: operationsAR
+      description: "Quantity of operations AR. AR operations= FD and PP"
+    - name: operationsAP
+      description: "Quantity of operations AP. AP operations= PY and PF"
+    - name: isActive60Days
+      description: "Indicates if the client is active, 1 = active"
+    - name: nbrClientsLastYear
+      description: "Quantity of clients in the last 365 days"
+    - name: nbrSuppliersLastYear
+      description: "Quantity of suppliers in the last 365 days"
+    - name: amountSalesLastYear
+      description: "Sales in the last 365 days"
+    - name: amountPurchasesLastYear
+      description: "Purchases in the last 365 days"
+    - name: amountProfitLastYear
+      description: "Profit in the last 365 days. lastProfit = lastSales - lastShops"
+    - name: avgMonthlySales
+      description: "Average monthly sales in the last 365 days"
+    - name: avgMonthlyPurchases
+      description: "Average monthly purchases in the last 365 days"
+    - name: totalCreditLine
+      description: "Credit line amount multiplied by active entity feature"
+    - name: creditLineAvailable
+      description: "Credit line amount multiplied available"
+    - name: nbrIssuedInvoicesLastYear
+      description: "Quantity of invoices issued in the last 365 days"
+    - name: nbrReceivedInvoicesLastYear
+      description: "Quantity of invoices received in the last 365 days"
+    - name: prcInvoicesCancelledLastYear
+      description: "Percentage of invoices cancelled in the last 365 days"
+    - name: avgMonthlyInvoiceCancelledLastYear
+      description: "Average monthly of invoices cancelled in the last 365 days"
+    - name: assignedChannel
+      description: "Chosen source for the business"
+    - name: amountOverdue0_5Days
+      description: "Current Amount Overdue between 0 and 5 days, does not include the 0"
+    - name: amountOverdue5_15Days
+      description: "Current Amount Overdue between 5 and 15 days, does not include the 5"
+    - name: amountOverdue15_30Days
+      description: "Current Amount Overdue between 15 and 30 days, does not include the 15"
+    - name: amountOverdue30_60Days
+      description: "Current Amount Overdue between 30 and 60 days, does not include the 30"
+    - name: amountOverdue60_90Days
+      description: "Current Amount Overdue between 60 and 90 days, does not include the 60"
+    - name: amountOverdue90_120Days
+      description: "Current Amount Overdue between 90 and 120 days, does not include the 90"
+    - name: amountOverdue120_180Days
+      description: "Current Amount Overdue between 120 and 180 days, does not include the 120"
+    - name: amountOverdue180Days
+      description: "Current Amount Overdue more of 180 days"
+    - name: nbrOrdersLast90d
+      description: "Number of orders in the last 90 days"
+    - name: bcgOK
+      description: "The Customer's background check is complete (boolean). Comes from `DataKam_Global.BGCNotion`"
+    - name: buroOK
+      description: "The Customer has authorized access to Buro (Mexico only)"
+    - name: userSegmentVolume
+      description: "Segment determined from its sales volume"
+    - name: form69
+      description: "Indicates whether the customer complies with sat69 or SAT69B, MX only."
+    - name: cost
+      description: "Customer costs, MX only"
+    - name: expenses
+      description: "Customer expenses, MX only"
+    - name: salaries
+      description: "Customer salaries, MX only"
+    - name: commercialCategory
+      description: "Customer commercial category"
+    - name: typeClientManagement
+      description: "Last classification of the client according to the management of its operations. Definition of customer success area"
+    - name: lastPfRate
+      description: "Rate of its last Payments with financing (PF) order in the lasts 6 months"
+    - name: lastFdRate
+      description: "Rate of its last direct financing (FD) order in the lasts 6 months, computed as a weighted average (by financed amount) of its invoiceRates"
+    - name: riskAdjustFlag
+      description: "1 for business with riskAdjust, null for business without information, otherwise 0"
+    - name: blocklisted
+      description: ""
+    - name: lifecycleStage
+      description: "Detailed category indicating the current state of the customer in its relationship with Xepelin. It is a subset of lifecycleActivity"
+    - name: lifecycleStatus
+      description: ""
+    - name: lifecycleActivity
+      description: "Summary category indicating the current state of the customer in its relationship with Xepelin"
+    - name: RegisterDateUser
+      description: "First registration date of a user"
+      
+
+  take user questions and response back with sql query.
+  example :
+  user question : give me the number of orders placed in last 10 days
+  your generated sql query : select orderId , count(DISTINCT orderId) totalOrders from `xepelin-ds-prod.prod_int.MasterOrderInvoice`  where date between current_date()-10 and current_date() group by date;
+
+  example : 
+  user question: give me the number of invoices 
+  your generated sql query: select count(distinct orderInvoiceId) totalInvoices from `xepelin-ds-prod.prod_int.MasterOrderInvoice`;
+
+  example :
+  user question: give me the number of orders per country and sector
+  your generated sql query: select mcd.country, mcd.sector, count(distinct moi.orderId) orders, from  `xepelin-ds-prod.prod_int.MasterOrderInvoice` moi 
+    left join `xepelin-ds-prod.prod_int.MasterCustomerData` mcd on moi.clientIdentifier = mcd.identifier
+  where mcd.sector IS NOT NULL
+  group by country, sector;
+
+  user question : {input}
+  your generated sql query :
